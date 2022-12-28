@@ -1,11 +1,7 @@
 #package to build a CLI
 import argparse
 
-#to get to target directory
-from pathlib import Path
-
 transactions = [];
-
 
 def LGregister(): #accounts, options
     #print(getTransactions(options.F))
@@ -44,11 +40,25 @@ parser = argparse.ArgumentParser(prog = 'ledger',
                                 formatter_class = argparse.RawDescriptionHelpFormatter,
                                 description= arg_desc)
 
-#positional argument
-###############################check how to indicate or run the name of the file
-parser.add_argument('filename')
+#positional argument (needed to obtain information to work on)
+parser.add_argument('-f', '--file', 
+                    help='Input a file to read'
+                    required=True)
 
-#register command
+#sort command
+parser.add_argument('-s', '--sort',
+                    help='Sort by date or comment')
+
+#prices database command
+parser.add_argument('--price-db', nargs=2,
+                    help='Load a prices database for your brokerage account')
+
+#optional commands
+parser.add_argument("command",
+                    choices=['balance', 'bal', 'register', 'reg', 'print'],
+                    help='Select a command to execute')
+
+"""#register command
 parser.add_argument('-reg', '--register', 
                     help='prints all the transactions and the running total',
                     action=LGregister())      # option that takes a value
@@ -61,10 +71,7 @@ parser.add_argument('-bal', '--balance',
 #print command
 parser.add_argument('-p', '--print', 
                     help='prints transactions in a textual format parsed by ledger',
-                    action=LGprint())      # option that takes a value
-
-#path command
-parser.add_argument("--path", type=Path, default=Path(__file__).absolute().parent, help="Path to the target directory")
+                    action=LGprint())      # option that takes a value"""
  
 args = vars(parser.parse_args())
 print(args)
