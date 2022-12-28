@@ -42,7 +42,7 @@ parser.add_argument('-f', '--file',
 
 #sort command
 parser.add_argument('-s', '--sort',
-                    help='Sort by date or comment')
+                    help='Sort by amount, comment or date')
 
 #prices database command
 parser.add_argument('--price-db', nargs=2,
@@ -63,3 +63,10 @@ print("debug")
 if args.file:
     readFile(args.file)
     parse(data)
+
+if args.sort == 'a':
+    sort = 'amount'
+elif args.sort == 'c':
+    sort = 'comment'
+elif args.sort == 'd':
+    sort = 'date'
