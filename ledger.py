@@ -3,6 +3,25 @@ import argparse
 
 transactions = [];
 
+#function to read the file
+def readFile(fileName):
+    #try tests a block of code for errors 
+    try:
+        #with is for exception handling to simplify...
+        #management of files
+        with open(filename) as f:
+            for line in f.readlines():
+                if line.startswith(';'):
+                    continue
+                if line.startswith('!include'):
+                    readFile(line.split()[1]) #recursive
+                    continue
+                data.append(line)
+    except FileNotFoundError:
+        print('File not found, please check the file name')
+        exit()
+
+
 #program description
 arg_desc = '''\
         Let's keep track of your finance!
@@ -38,3 +57,9 @@ parser.add_argument("command",
 args = parser.parse_args()
 print(args)
 print("debug")
+
+#calling function defined above depending on the input of commands and flags
+
+if args.file:
+    readFile(args.file)
+    parse(data)
