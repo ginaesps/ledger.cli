@@ -1,12 +1,17 @@
 #package to build a CLI
 import argparse
 
-transactions = [];
+data = []
 
-#function to read the file
-def readFile(fileName):
-    #try tests a block of code for errors 
-    try:
+"""
+----------- readFile function() -----------
+reads a file and stores its lines in the data list.
+the with statement opens the file and reads it line by line with for and readlines()
+If the line starts with ! there's recursion with the filename after the ! and with 
+the continue statement, skips to the next iteration.
+If it doesn't start with ! or ; then the line appends()
+"""
+def readFile(filename):
         #with is for exception handling to simplify...
         #management of files
         with open(filename) as f:
@@ -17,9 +22,6 @@ def readFile(fileName):
                     readFile(line.split()[1]) #recursive
                     continue
                 data.append(line)
-    except FileNotFoundError:
-        print('File not found, please check the file name')
-        exit()
 
 
 #program description
