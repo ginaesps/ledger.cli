@@ -362,4 +362,5 @@ elif args.sort == 'a' or args.sort == 'amount':
 if args.command in ['balance', 'bal']:
     balance_ledger(transactions)
 
-#if args.command in ['register', 'reg']:
+if args.command in ['register', 'reg']:
+    register_ledger(transactions, sort)
