@@ -1,7 +1,10 @@
-#package to build a CLI
-import argparse
+#Imports
+import argparse 
+import datetime 
+import numpy as np
 
 data = []
+transactions = []
 
 """
 ----------- Transaction class() -----------
@@ -62,6 +65,47 @@ class Node():
         self.children = []
         self.balance = collections.defaultdic(float)
         self.name = name
+
+
+"""
+----------- parse function() -----------
+It iterates every 3 lines. For each iteration, it takes the 1st element, data[i], which
+should contain the date, a comment and a newline char. It is split by space into date and 
+comment. The date is converted to a datetime.date obj. 
+datetime format: year, month, day
+data[i+1] shoudl contain the name account and amount for account1. It splits and remove empty
+elements from the resulting list.
+data[i+2] should contain name account and amount for account2. If the list has only one element, 
+it is assigned to account2 and sets amount2 = None
+The result is a Transaction object with the extracted data
+"""
+def parse(data):
+    for i in range(0, len(data), 3):
+        data[i] = data[i].replace('/', '-').strip('\n')
+        firstline = data[i].split(' ', 1)
+        date = np.array(firstline[0].split('-')).astype(int)
+        date = datetime.date(date[0], date[1], date[2])
+        comment = firstline[1]
+
+        secondline = data[i+1].strip('\n').split('\t')
+        for item in secondline:
+            if item == '':
+                secondline.remove(item)
+        account1 = secondline[0].strip()
+        amount1 = secondline[1]
+
+        thirdline = data[i+2].strip('\n').split('\t')
+        for item in thirdline:
+            if item == '':
+                thirdline.remove(item)
+        account2 = thirdline[0].strip()
+        if len(thirdline) > 1:
+            amount2 = thirdline[1]
+        else
+            amount2 = None
+
+        transactions.append(Transaction(date, comment, account1, 
+                            amount1, account2, amount2))
 
 
 """
