@@ -1,10 +1,14 @@
 #Imports
 import argparse 
 import datetime 
+import collections
 import numpy as np
+from colored import fg
 
 data = []
 transactions = []
+balance = collections.defaultdic(float)
+red = fg('red')
 
 """
 ----------- Transaction class() -----------
@@ -106,6 +110,22 @@ def parse(data):
 
         transactions.append(Transaction(date, comment, account1, 
                             amount1, account2, amount2))
+
+
+"""
+----------- colorbalance function() -----------
+Takes in a dictionary of balances and returns a copy with formatted values to display 
+the currency symbol and two decimal places. If -value, red output.
+Formatting done with str.format() and ANSI escape codes for text color
+"""
+def colorbalance(balance):
+    colored = balance.copy()
+    for key in colored:
+        if colored[key] < 0:
+            colored[key] = red + key + ' ' + '{:.2f}'.format(colored[key]) + black
+        else:
+            colored[key] = key + ' ' + '{:.2f}'.format(colored[key])
+    return colored
 
 
 """
