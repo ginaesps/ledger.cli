@@ -55,18 +55,26 @@ parser.add_argument("command",
 
 #Parse the arguments given as inputs 
 args = parser.parse_args()
-print(args)
-print("debug")
 
 #calling function defined above depending on the input of commands and flags
 
 if args.file:
     readFile(args.file)
-    parse(data)
 
-if args.sort == 'a':
-    sort = 'amount'
-elif args.sort == 'c':
-    sort = 'comment'
-elif args.sort == 'd':
+else:
+    readFile('index.ledger')
+
+parse(data)
+
+if args.sort == 'd' or args.sort == 'date':
     sort = 'date'
+elif args.sort == 'a' or args.sort == 'amount':
+    sort = 'amount'
+
+#if args.price_db:
+
+#if args.command == 'print':
+
+#if args.command in ['balance', 'bal']:
+
+#if args.command in ['register', 'reg']:
