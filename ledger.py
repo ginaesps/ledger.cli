@@ -77,6 +77,26 @@ class Node():
 
 
 """
+----------- readFile function() -----------
+reads a file and stores its lines in the data list.
+the with statement opens the file and reads it line by line with for and readlines()
+If the line starts with ! there's recursion with the filename after the ! and with 
+the continue statement, skips to the next iteration.
+If it doesn't start with ! or ; then the line appends()
+"""
+def readFile(filename):
+        #with is for exception handling to simplify management of files
+        with open(filename) as f:
+            for line in f.readlines():
+                if line.startswith(';'):
+                    continue
+                if line.startswith('!include'):
+                    readFile(line.split()[1]) #recursive
+                    continue
+                data.append(line)
+
+                
+"""
 ----------- parse function() -----------
 It iterates every 3 lines. For each iteration, it takes the 1st element, data[i], which
 should contain the date, a comment and a newline char. It is split by space into date and 
@@ -206,26 +226,6 @@ def balance_ledger(transactions, *filters):
         bal.append([''.join('%s\n'% val for (key, val) in colorbal.items()),
                     ' '])
         print(tabulate(bal, headers))
-
-"""
------------ readFile function() -----------
-reads a file and stores its lines in the data list.
-the with statement opens the file and reads it line by line with for and readlines()
-If the line starts with ! there's recursion with the filename after the ! and with 
-the continue statement, skips to the next iteration.
-If it doesn't start with ! or ; then the line appends()
-"""
-def readFile(filename):
-        #with is for exception handling to simplify...
-        #management of files
-        with open(filename) as f:
-            for line in f.readlines():
-                if line.startswith(';'):
-                    continue
-                if line.startswith('!include'):
-                    readFile(line.split()[1]) #recursive
-                    continue
-                data.append(line)
 
 
 #program description
