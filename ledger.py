@@ -357,7 +357,8 @@ elif args.sort == 'a' or args.sort == 'amount':
 
 #if args.price_db:
 
-#if args.command == 'print':
+if args.command == 'print':
+    print_ledger(transactions, sort)
 
 if args.command in ['balance', 'bal']:
     balance_ledger(transactions)
