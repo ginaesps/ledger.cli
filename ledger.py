@@ -1,4 +1,5 @@
 #Imports
+from os import read
 import argparse 
 import datetime 
 import collections
@@ -9,6 +10,7 @@ from colored import fg
 data = []
 transactions = []
 bal = []
+sort = False
 balance = collections.defaultdic(float)
 colorbal = collections.defaultdic(str)
 red = fg('red')
@@ -97,7 +99,7 @@ def readFile(filename):
 
 
 """
------------ parse function() -----------
+----------- parse data function() -----------
 It iterates every 3 lines. For each iteration, it takes the 1st element, data[i], which
 should contain the date, a comment and a newline char. It is split by space into date and 
 comment. The date is converted to a datetime.date obj. 
@@ -135,6 +137,82 @@ def parse(data):
 
         transactions.append(Transaction(date, comment, account1, 
                             amount1, account2, amount2))
+
+
+"""
+----------- print_ledger function() -----------
+Prints a list of transactions according to a specified sorting and filtering criteria.
+Sort=str, specifies the sort type. Filters is a tuple of str that specifies the filtering.
+When the function prints the date, comment, accounts and amounts. 
+If abs(amount1) == abs(amount2), only account2 is printed. Otherwise, both are printed.
+"""
+def print_ledger(transactions, sort=None, *filters):
+    if sort == 'date':
+        print('Sorting by date...\n')
+        transactions.sort(key=lambda x: x.date)
+    elif sort == 'amount':
+        print('Sorting by amount...\n')
+        transactions.sort(key=lambda x: x.amount1)
+
+    for t in transactions:
+        if t.amount1[1] < 0:
+            amount1 = red + t.amount1[0] + ' ' + '{:.2f}'.format(t.amount1[1]) + black
+        else:
+            amount1 = t.amount1[0] + ' ' + '{:.2f}'.format(t.amount1[1])
+        if t.amount2[1] < 0:
+            amount2 = red + t.amount2[0] + ' ' + '{:.2f}'.format(t.amount2[1]) + black
+        else:
+            amount2 = t.amount2[0] + ' ' + '{:.2f}'.format(t.amount2[1])
+
+        print(str(t.date) + ' ' + '{:<30}'.format(t.comment))
+        print('\t\t' + (blue + '{:30}'.format(t.account1) + black + '\t\t\t\t' + amount1))
+        if abs(t.amount1[1]) == abs(t.amount2[1]):
+            print('\t\t' + (blue + '{:30}'.format(t.account2) + black))
+        else:
+            print('\t\t' + (blue + '{:30}'.format(t.account2) + black) + '\t\t\t\t' + amount2)
+
+
+"""
+----------- register_ledger function() -----------
+Prints a register of transactions. Takes in a list of transactions and optional arguments sort
+and filters. Balance dictionary keeps track for each currency. 
+For each transaction iteration, it formats the amount as a str with the correct symbol and color.
+It then updates the balance for 1st and 2nd account in the transaction and appends relevant info
+"""
+def register_ledger(transactions, sort=None, *filters):
+    headers = ['Date', 'Comment', 'Account', 'Amount', 'Balance']
+    register = []
+    balance = collections.defaultdic(float)
+
+    if sort == 'date':
+        print('Sorting by date...\n')
+        transactions.sort(key=lambda x: x.date)
+    elif sort == 'amount':
+        print('Sorting by amount...\n')
+        transactions.sort(key=lambda x: x.amount1)
+
+    for t in transactions: #register
+        if t.amount1[1] < 0:
+            amount1 = red + t.amount1[0] + ' ' + '{:.2f}'.format(t.amount1[1]) + black
+        else:
+            amount1 = t.amount1[0] + ' ' + '{:.2f}'.format(t.amount1[1])
+        if t.amount2[1] < 0:
+            amount2 = red + t.amount2[0] + ' ' + '{:.2f}'.format(t.amount2[1]) + black
+        else:
+            amount2 = t.amount2[0] + ' ' + '{:.2f}'.format(t.amount2[1])
+        
+        #update balance for amount1
+        balance[t.amount1[0]] += t.amount1[1]
+        colorbal = colorbalance(balance)
+        register.append([t.date, t.comment, blue + t.account1 + black, amount1, ''.join('%s\n'% (val) for (key, val) in colorbal.items())])
+
+        #update balance for amount2
+        balance[t.amount2[0]] += t.amount2[1]
+        colorbal = colorbalance(balance)
+        register.append(['', '', blue + t.account2 + black, amount2, ''.join('%s\n'% (val) for (key, val) in colorbal.items())])
+        register.append(['- ', ' ', ' ', ' ', ' '])
+
+    print(tabulate(register, headers))
 
 
 """
