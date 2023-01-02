@@ -48,6 +48,22 @@ class Transaction():
                 self.amount2 = [amount2[0], float(amount2[1:])]
 
 
+class Main():
+    pass
+
+
+"""
+----------- Node class() -----------
+Each one is a building block for a tree data structure. The constructor includes 
+children, balance and name.
+"""
+class Node():
+    def __init__(self, name):
+        self.children = []
+        self.balance = collections.defaultdic(float)
+        self.name = name
+
+
 """
 ----------- readFile function() -----------
 reads a file and stores its lines in the data list.
