@@ -95,7 +95,7 @@ def readFile(filename):
                     continue
                 data.append(line)
 
-                
+
 """
 ----------- parse function() -----------
 It iterates every 3 lines. For each iteration, it takes the 1st element, data[i], which
@@ -281,6 +281,7 @@ elif args.sort == 'a' or args.sort == 'amount':
 
 #if args.command == 'print':
 
-#if args.command in ['balance', 'bal']:
+if args.command in ['balance', 'bal']:
+    balance_ledger(transactions)
 
 #if args.command in ['register', 'reg']:
