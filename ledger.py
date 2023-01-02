@@ -1,5 +1,6 @@
 #Imports
 from os import read
+import re
 import argparse 
 import datetime 
 import collections
@@ -13,9 +14,11 @@ bal = []
 sort = False
 balance = collections.defaultdic(float)
 colorbal = collections.defaultdic(str)
+exchange = collections.defaultdic(float)
 red = fg('red')
 blue = fg('blue')
 black = fg('black')
+defaultcurrency = '$'
 
 """
 ----------- Transaction class() -----------
@@ -96,6 +99,39 @@ def readFile(filename):
                     readFile(line.split()[1]) #recursive
                     continue
                 data.append(line)
+
+
+"""
+----------- read_pricedb function() -----------
+It compiles a regex pattern that matches a number with an optional decimal point and optional
+comma separators that will be used to extract exchange rates from the file.
+Inside the try block, where the file was found and is being read. 
+If the line starts with N, it skips onto the next iteration. If the line starts with D, split
+obtains the currency symbol and exchange rate from the line, and uses findall() to extract the
+exchange rate, which is stored in the exchange dictionary using the currency symbol as key.
+"""
+def read_pricedb(filename):
+    exchange['$'] = 1.0
+    pattern = re.compile(r'\b\d[\d,.]*\b')#only looks up for numbers with optional symbols
+    try:
+        with open(filename) as f:
+            for line in f.readlines():
+                if line.startswith('N'):
+                    continue
+
+                if line.startswith('D'):
+                    defaultcurrency = re.sub(pattern, '', line.split(' ', 1)[1]).strip()
+                    #original string takes off the letter because it starts with 2nd position
+                    #coincidence of the pattern is taken off
+                    #strip allows defaultcurrency to only be the needed char(s)
+
+                if line.startswith('P'):
+                    # example: P 2012/11/25 05:04:00 AU $1751.90
+                    symbol, exrate = line.split(' ', 3)[3].split(' ')
+                    exchange[symbol] = float(re.findall(pattern, exrate)[0])
+    except FileNotFoundError:
+        print('Price-DB file not found, please check the file name')
+        exit()
 
 
 """
