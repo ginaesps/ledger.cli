@@ -421,7 +421,9 @@ if args.sort == 'd' or args.sort == 'date':
 elif args.sort == 'a' or args.sort == 'amount':
     sort = 'amount'
 
-#if args.price_db:
+if args.price_db:
+    read_pricedb(args.price_db[0])
+    exchange_values(transactions, exchange, args.price_db[1])
 
 if args.command == 'print':
     print_ledger(transactions, sort)
