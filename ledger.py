@@ -135,6 +135,36 @@ def read_pricedb(filename):
 
 
 """
+----------- exchange_values function() -----------
+transactions argument is a list of Transaction objects, exchange argument is a dictionary that maps
+currency symbols to exchange rates, currency argument is a string representing the target currency to 
+which the amounts should be converted.
+If the currency of the transaction's amount isn't = as target, first it converts to USD and then to target
+"""
+def exchange_values(transactions, exchange, currency=defaultcurrency):
+    if currency in exchange:
+        for tr in transactions:
+            if not tr.amount1[0] == currency:
+                if not tr.amount1[1] == '$':
+                    tr.amount1[1] *= exchange[tr.amount1[0]]
+                    tr.amount1[0] = '$'
+
+                tr.amount1[1] /= exchange[currency]
+                tr.amount1[0] = currency
+
+            if not tr.amount2[0] == currency:
+                if not tr.amount2[1] == '$':
+                    tr.amount2[1] *= exchange[tr.amount2[0]]
+                    tr.amount2[0] = '$'
+
+                tr.amount2[1] /= exchange[currency]
+                tr.amount2[0] = currency
+    else:
+        print(red + 'Currency not found in Price-DB, please check the currency or update the Price-DB'
+                + black + '\nPrinting the Report without exchange rates')
+
+
+"""
 ----------- parse data function() -----------
 It iterates every 3 lines. For each iteration, it takes the 1st element, data[i], which
 should contain the date, a comment and a newline char. It is split by space into date and 
