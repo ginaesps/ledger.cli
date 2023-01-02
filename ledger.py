@@ -3,12 +3,17 @@ import argparse
 import datetime 
 import collections
 import numpy as np
+from tabulate import tabulate
 from colored import fg
 
 data = []
 transactions = []
+bal = []
 balance = collections.defaultdic(float)
+colorbal = collections.defaultdic(str)
 red = fg('red')
+blue = fg('blue')
+black = fg('black')
 
 """
 ----------- Transaction class() -----------
@@ -127,6 +132,80 @@ def colorbalance(balance):
             colored[key] = key + ' ' + '{:.2f}'.format(colored[key])
     return colored
 
+
+"""
+----------- print_node function() -----------
+Takes in a node object and prints the name and balance, as well as from the children
+recursively. First, a copy of colorbal is created (node's bal dict) and formats balance values
+with colorbalance(). If node has only one child, it appends a list with the balance and concatenation
+of info to bal list. Otherwise, it apends same as before plus print_node() on each child
+"""
+def print_node(node):
+    colorbal = colorbalance(node.balance)
+    
+    if len(node.children) == 1:
+        bal.append([''.join('%s\n'% (val) for (key, val) in colorbal.items()),
+            blue + node.name + ':' + node.children[0].name + black])
+    else:
+        bal.append([''.join('%s\n'% (val) for (key, val) in colorbal.items()),
+            blue + node.name + black])
+        for childnode in node.children:
+            print_node(childnode)
+
+
+"""
+----------- balance_ledger function() -----------
+Takes a list of transactions and optional filters as input, prints the balance of accounts.
+It creates a tr list with tr account1, amount1, account2 and amount2. For each element, the 
+balance is updated for the main tree and current node by adding amount(1 or 2).
+For each subaccount obtained from the account's name, the function checks if it exist as a
+child of the current node so that it can set the current node as that child or creates a new one
+and adds it as a child of the current node and updates the balance of current node.
+When all transactions have been processed, the function sorts the children of root by name and
+print_node on each child. Finally, it prints the balance of the root node and all its children with tabulate()
+"""
+def balance_ledger(transactions, *filters):
+    tree = Main()
+    currentnode = Node('root')
+    tree.root = currentnode
+
+    for t in transactions:
+        tr = [[t.account1, t.amount1], [t.account2, t.amount2]]
+
+        for i in tr: #update main tree balance
+            currentnode.balance[i[1][0]] += i[1][1]
+
+            for account in i[0].split(':'):
+                account = account.strip()
+                nextnode = None
+
+                for child in currentnode.children:
+                    if child.name == account:
+                        nextnode = child
+                        break
+                if nextnode:
+                    currentnode = nextnode
+                else:
+                    newnode = Node(account)
+                    currentnode.children.append(newnode)
+                    currentnode = newnode
+                
+                #update currentnode balance
+                currentnode.balance[i[1][0] += i[1][1]]
+            
+            currentnode = tree.root
+        
+        tree.root.children.sort(key=lambda x: x.name)
+        headers = ['Balance', 'Account']
+
+        for x in tree.root.children:
+            print_node(x)
+
+        bal.append(['----------------', ' ']) #append root balance
+        colorbal = colorbalance(tree.root.balance)
+        bal.append([''.join('%s\n'% val for (key, val) in colorbal.items()),
+                    ' '])
+        print(tabulate(bal, headers))
 
 """
 ----------- readFile function() -----------
